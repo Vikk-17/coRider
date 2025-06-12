@@ -127,6 +127,23 @@ def delete_user(id: str):
     db.users_collection.delete_one({"_id": ObjectId(id)})
     return "Deleted user successfully"
 
+@app.put("/users/<id>")
+def update_user(id: str):
+    req = request.get_json()
+    query_filter = {
+        "_id": ObjectId(id), 
+    }
+
+    update_operation = {
+        "$set": {
+            "name": req["name"],
+            "username": req["username"],
+            "password": req["password"],
+        }
+    }
+    db.users_collection.update_one(query_filter, update_operation)
+    return f"Update successful"
+
 # db.close_connection()
 
 if __name__ == "__main__":
