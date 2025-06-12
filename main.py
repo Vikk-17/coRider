@@ -10,17 +10,17 @@ app = Flask(__name__)
 # Load the environ variables
 load_dotenv()
 
-user_data: dict = {
-    "name": "Alex",
-    "username": "Alex@gmail.com",
-    "password": "Alex!@#1234",
-}
-
-user_data1: dict = {
-    "name": "Alex Homorazu",
-    "username": "Alexhom@gmail.com",
-    "password": "Alex!@#1234",
-}
+# user_data: dict = {
+#     "name": "Alex",
+#     "username": "Alex@gmail.com",
+#     "password": "Alex!@#1234",
+# }
+#
+# user_data1: dict = {
+#     "name": "Alex Homorazu",
+#     "username": "Alexhom@gmail.com",
+#     "password": "Alex!@#1234",
+# }
 
 
 class DatabaseConnection:
@@ -121,6 +121,13 @@ def get_user(id: str):
         return jsonify({f"Error: Error while getting ther user {str(e)}"})
 
 
+
+@app.delete("/users/<id>")
+def delete_user(id: str):
+    db.users_collection.delete_one({"_id": ObjectId(id)})
+    return "Deleted user successfully"
+
+# db.close_connection()
 
 if __name__ == "__main__":
     app.run(debug=True)
