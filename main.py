@@ -1,8 +1,9 @@
-from enum import unique
-from flask import Flask
+from flask import Flask, request, jsonify
 import os
 from dotenv import load_dotenv
 from pymongo import MongoClient
+from bson.objectid import ObjectId
+from bson.json_util import dumps
 
 app = Flask(__name__)
 
@@ -10,14 +11,12 @@ app = Flask(__name__)
 load_dotenv()
 
 user_data: dict = {
-    "_id": 1,
     "name": "Alex",
     "username": "Alex@gmail.com",
     "password": "Alex!@#1234",
 }
 
 user_data1: dict = {
-    "_id": 2,
     "name": "Alex Homorazu",
     "username": "Alexhom@gmail.com",
     "password": "Alex!@#1234",
@@ -42,17 +41,18 @@ class DatabaseConnection:
    
 
     def initialize_collection(self):
-        self.users_collection.create_index(["_id", "email"], unique=True)
+        self.users_collection.create_index("email", unique=True)
 
     
     def clear_collection(self):
         self.users_collection.delete_many({})
 
 
-    def store_payload(self, payload):
+    def store_payload(self, payload: dict) -> str:
         try:
             result = self.users_collection.insert_one(payload)
             print(result)
+            return str(result.inserted_id)
         except Exception as e:
             return f"Error while inserting data: {e}"
     
@@ -63,6 +63,7 @@ class DatabaseConnection:
 
 db = DatabaseConnection()
 # db.store_payload(user_data1)
+# db.store_payload(user_data)
 # db.clear_collection()
 # db.close_connection()
 
@@ -71,23 +72,54 @@ def test():
     return "<p>testing environment</p>"
 
 
-@app.get("/users/id")
-def get_user(id):
-    """
-    fetch a specific user from the database provide user_id
-    """
-    try:
-        return db.users_collection.find_one({"_id": id})
-    except:
-        return None
-
 
 @app.get("/users")
 def fetch_users():
     """
     fetch all the users from the database
     """
-    return list(db.users_collection.find({}))
+    # if request.method == "GET":
+    users = db.users_collection.find({})
+    results = []
+    for user in users:
+        user["_id"] = str(user["_id"])
+        results.append(user)
+    return jsonify(results)
+
+
+@app.post("/users")
+def post_user():
+    req_data = request.get_json()
+    name = req_data["name"]
+    username = req_data["username"]
+    password = req_data["password"]
+        
+    payload = {
+        "name": name,
+        "username": username,
+        "password": password,
+    }
+
+    insert_result = db.store_payload(payload)
+    return f"Inserted Id: {insert_result}"
+
+
+@app.get("/users/<id>")
+def get_user(id: str):
+    """
+    fetch a specific user from the database provide user_id
+    """
+    try:
+        user = db.users_collection.find_one({"_id": ObjectId(id)})
+        if user:
+            user["_id"] = str(user["_id"])
+            return jsonify(user)
+        else:
+            return jsonify({"error": "User not found"}), 404
+
+    except Exception as e:
+        return jsonify({f"Error: Error while getting ther user {str(e)}"})
+
 
 
 if __name__ == "__main__":
