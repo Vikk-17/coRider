@@ -77,6 +77,7 @@ Now run the postman and send requests to endpoints.
 
 
 ## Screenshots
+![Docker Container](./assests/docker.png)
 ![Get Users](./assests/get_users.png)
 ![Get Specific User](./assests/get_spcecifi_user.png)
 ![Delete User Details](./assests/delete_user_details.png)
