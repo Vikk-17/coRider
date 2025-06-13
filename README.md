@@ -58,7 +58,7 @@ Now run the following command to create and run the docker container:
 docker run -p <HostPort:ContainerPort> -e MONGO_URI="MongoDB-connection-string" <image_name>
 
 // Example
-docker run -p 3000:3000 -e MONGO_URI="mongodb+srv://admin:admin123@cluster0.r0k4t.mongodb.net/" nervous_torvalds
+docker run -p 3000:3000 -e MONGO_URI="mongodb+srv://test:test123@cluster0.r0k4t.mongodb.net/" nervous_torvalds
 ```
 - `-e`: To provide environment variable
 - `-p`: To map port of host to container
