@@ -1,7 +1,6 @@
-
 # coRider
 
-**Tested in linux environment**
+**Tested in linux environment (Arch btw)**
 
 ## Introduction
 A Flask application that performs CRUD (Create, Read, Update, Delete) operations on a MongoDB database for a User resource using a REST API. The REST API endpoints should be accessible via HTTP requests and tested using Postman.
